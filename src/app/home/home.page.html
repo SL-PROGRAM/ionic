@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Blank
+      Open Trivia 
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -9,12 +9,53 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
+      <ion-title size="large">Open Trivia</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+  <ion-list *ngIf = "login == false">
+    <ion-item>
+      <ion-label position="floating">Votre Pseudo</ion-label>
+      <ion-input type="text" [(ngModel)]="pseudo"></ion-input>
+    </ion-item>
+    <ion-item> 
+      <ion-label>Difficulté</ion-label>
+        <ion-select [(ngModel)]="difficult">
+          <ion-select-option value="Easy">Easy</ion-select-option>
+          <ion-select-option value="Medium">Medium</ion-select-option>
+          <ion-select-option value="Hard">Hard</ion-select-option>
+        </ion-select>>
+      </ion-item>
+      <ion-item>  
+        <ion-toggle [(ngModel)]="saveInformation"></ion-toggle>
+        Sauvegarder mes informations
+      </ion-item>
+      <ion-item> 
+        <ion-button (click)="clickStartButton()">Commencer</ion-button>
+
+        <div *ngIf="error">
+          <p>{{error}} </p>
+        </div>
+    </ion-item>
+  </ion-list>
+  <ion-list *ngIf = "login == true" id="container">
+    <ion-card>
+      <ion-card-header>
+        <p>Bonjour, {{pseudo}} </p>
+    </ion-card-header>
+      <ion-card-content>
+        <p [innerHTML]="questionPrint">{{questionPrint}} </p>
+      </ion-card-content>
+    <ion-card-content *ngFor="let reponse of allReponse" >
+          <ion-button [innerHTML]="reponse" (click)="testReponse(reponse)">{{reponse}}</ion-button>
+    </ion-card-content>
+      <div *ngIf="repondu == true">
+        <ion-button (click)="questionSuivante()">Question Suivante</ion-button>
+      </div>
+
+    </ion-card>
+    
+    
+     
+  </ion-list>
 </ion-content>
