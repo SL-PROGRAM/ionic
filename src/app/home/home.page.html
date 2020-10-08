@@ -38,7 +38,7 @@
         </div>
     </ion-item>
   </ion-list>
-  <ion-list *ngIf = "login == true" id="container">
+  <ion-list *ngIf = "login == true && endQuestion==false" id="container">
     <ion-card>
       <ion-card-header>
         <p>Bonjour, {{pseudo}} </p>
@@ -46,11 +46,27 @@
       <ion-card-content>
         <p [innerHTML]="questionPrint">{{questionPrint}} </p>
       </ion-card-content>
-    <ion-card-content *ngFor="let reponse of allReponse" >
+      <div *ngIf="!repondu">
+        <ion-card-content *ngFor="let reponse of allReponse" >
           <ion-button [innerHTML]="reponse" (click)="testReponse(reponse)">{{reponse}}</ion-button>
-    </ion-card-content>
-      <div *ngIf="repondu == true">
+        </ion-card-content>
+      </div>
+      <div *ngIf="repondu">
+        <ion-card-content *ngFor="let reponse of allReponse" >
+          <div *ngIf="reponse === questionCourant.correct_answer" >
+            <ion-button color="success" [innerHTML]="reponse">{{reponse}}</ion-button>
+          </div>
+          <div *ngIf="reponse !== questionCourant.correct_answer" >
+            <ion-button color="danger" [innerHTML]="reponse">{{reponse}}</ion-button>
+          </div>
+        </ion-card-content>
+      </div>
+
+      <div *ngIf="repondu == true && questionNumber < questions.length">
         <ion-button (click)="questionSuivante()">Question Suivante</ion-button>
+      </div>
+      <div *ngIf="questionNumber == questions.length">
+        <ion-button (click)="voirBonneReponse()">Voir les bonnes réponses</ion-button>
       </div>
 
     </ion-card>
@@ -58,4 +74,18 @@
     
      
   </ion-list>
+  <ion-list *ngIf = "endQuestion==true">
+    <ion-card>
+      <ion-card-header>
+        <p>Bonjour, {{pseudo}} </p>
+
+      </ion-card-header>
+      <ion-card-content>
+        <p>vous avez répondu à : {{questionNumber}} questions</p>
+        <p>vous avez répondu juste à : {{reponseJuste}} question(s)</p>
+        <ion-button (click)="restart()">restart</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+
 </ion-content>

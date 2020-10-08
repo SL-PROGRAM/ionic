@@ -21,6 +21,8 @@ export class HomePage {
   public questionCourant : Question;
   public questionPrint = "";
   public allReponse =[];
+  public reponseJuste = 0;
+  public endQuestion = false;
 
 
   constructor(private alertCtrl: AlertController,
@@ -28,6 +30,21 @@ export class HomePage {
               private rechercherQuestion: OpenTriviaService,
 
     ){ }
+
+    public initGame(){
+      this.difficult = 'Easy';
+      this.saveInformation = true;
+      this.pseudo = 'zeaazzeez';
+      this.error = '';
+      this.login = false;
+      this.repondu = false;
+      this.questions = [];
+      this.questionNumber = 0;
+      this.questionPrint = "";
+      this.allReponse =[];
+      this.reponseJuste = 0;
+      this.endQuestion = false;
+    }
 
   public async clickStartButton(){
     this.error = '';
@@ -69,22 +86,18 @@ export class HomePage {
           });
           alert.present();
         });
-     await this.makePrint();
   }
 
   private selectQuestion() {
-
-    // this.questionNumber = this.questions.length;
-    // let mark = this.numberRandom(this.questions.length);
-    // this.questionCourant = this.questions[mark];
-    // console.log(this.questions);
-    // this.questions.splice(mark, 1);
-    // console.log(this.questions);
+    this.questionCourant = this.questions[this.questionNumber];
+    this.questionNumber++;
+    this.makePrint()
   }
 
   private makePrint(){
     this.questionPrint = this.questionCourant.question;
-    this.allReponse = this.questionCourant.incorrect_answers;
+    this.allReponse = [];
+    this.allReponse = this.allReponse.concat(this.questionCourant.incorrect_answers);
     this.allReponse.splice(this.numberRandom(this.allReponse.length), null, this.questionCourant.correct_answer);
     let rr = this.allReponse.length
     let mark = 0;
@@ -95,15 +108,25 @@ export class HomePage {
     return Math.round(Math.random()*number);
   }
 
+  public voirBonneReponse(){
+    this.endQuestion = true;
+  }
+
+  async restart(){
+    this.initGame();
+  }
+
 
   public testReponse(reponse){
-
       this.repondu = true;
-      console.log(reponse);
+      if(reponse == this.questionCourant.correct_answer){
+        this.reponseJuste++;
+      }
   }
 
   public questionSuivante(){
       this.selectQuestion();
+      this.repondu = false;
   }
 
   async presentToast() {
