@@ -1,47 +1,69 @@
 import {Injectable} from '@angular/core';
 import {Question} from '../models/question';
+import {HttpClient, HttpParams} from '@angular/common/http';
 
-@Injectable()
+@Injectable(
+    {
+        providedIn : 'root'
+    }
+)
 export class OpenTriviaService{
-    public getQuestions(nombre: number, niveau: string): Promise<Array<Question>>{
+    constructor(private httpClient: HttpClient) {    }
+
+    async getQuestions(number: number, difficult: string): Promise<Array<Question>> {
+         let token =  await this.getToken();
         return new Promise((resolve, reject) =>
         {
-            resolve([
-                {
-                    category: 'Entertainment: Japanese Anime & Manga',
-                    type: 'multiple',
-                    difficulty: `easy`,
-                    question: 'In &quot;Fairy Tail&quot;, what is the nickname of Natsu Dragneel?',
-                    correct_answer: 'The Salamander',
-                    incorrect_answers: ['The Dragon Slayer', 'The Dragon', 'The Demon']
-                },
-                {
-                    category: 'Entertainment: Video Games',
-                    type: 'boolean',
-                    difficulty: 'medium',
-                    question: '&quot;Return to Castle Wolfenstein&quot; was the only game of the Wolfenstein series where you don&#039;t ' +
-                        'play as William &quot;B.J.&quot; Blazkowicz.',
-                    correct_answer: 'False',
-                    incorrect_answers: ['True']
-                },
-                {
-                    category: 'Entertainment: Japanese Anime & Manga',
-                    type: 'multiple',
-                    difficulty: `easy`,
-                    question: 'In &quot;Fairy Tail&quot;, what is the nickname of Natsu Dragneel?',
-                    correct_answer: 'The Salamander',
-                    incorrect_answers: ['The Dragon Slayer', 'The Dragon', 'The Demon']
-                },
-                {
-                    category: 'Entertainment: Video Games',
-                    type: 'boolean',
-                    difficulty: 'medium',
-                    question: '&quot;Return to Castle Wolfenstein&quot; was the only game of the Wolfenstein series where you don&#039;t ' +
-                        'play as William &quot;B.J.&quot; Blazkowicz.',
-                    correct_answer: 'False',
-                    incorrect_answers: ['True']
-                }
-            ]);
-        });
+            let params = new HttpParams();
+            params = params.append('token', token);
+            if(number){
+                params = params.append('amount', String(number) );
+            }
+            if (difficult && difficult !== ''){
+                params = params.append('difficulty', difficult);
+            }
+            console.log('coco');
+            this.httpClient.get('https://opentdb.com/api.php', { params: params })
+                .toPromise()
+                .then((response) =>{
+                    console.log(response);
+                    if(response['response_code'] == 0 ){
+                        resolve(response['results'])
+                        console.log(response['results']);
+                    }
+                    else {
+                        reject('Le serveur n\'a pas retourné de valeur !!!' );
+                    }
+                })
+                .catch((error) =>{
+                    reject(error);
+                })
+
+        })
+    }
+
+    public getToken(): Promise<string> {
+        return new Promise((resolve, reject) =>
+        {
+            let params = new HttpParams();
+
+            this.httpClient.get('https://opentdb.com/api_token.php?command=request', { params: params })
+                .toPromise()
+                .then((response) =>{
+                    console.log(response);
+                    if(response['response_code'] == 0 ){
+                        resolve(response['token'])
+                        console.log(response['token']);
+                    }
+                    else {
+                        reject('Le serveur n\'a pas retourné de valeur !!!' );
+                    }
+                })
+                .catch((error) =>{
+                    reject(error);
+                })
+
+        })
     }
 }
+

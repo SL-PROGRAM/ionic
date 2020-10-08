@@ -23,6 +23,7 @@ export class HomePage {
   public allReponse =[];
   public reponseJuste = 0;
   public endQuestion = false;
+  public token = '';
 
 
   constructor(private alertCtrl: AlertController,
@@ -72,7 +73,7 @@ export class HomePage {
     this.login = true;
 
     this.presentToast();
-    await this.rechercherQuestion.getQuestions(1, 'easy')
+    await this.rechercherQuestion.getQuestions(100, 'easy')
         .then((resultat) => {
               this.questions = resultat;
               this.selectQuestion();
